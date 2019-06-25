@@ -6,41 +6,7 @@ from django.core.paginator import Paginator
 from .forms import *
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
-'''
-config = {
-    'apiKey': "AIzaS--your config here ---fOMd4pYUkbkZVvI",
-    'authDomain': "cpanel-5e873.firebaseapp.com",
-    'databaseURL': "https://cpanel-5e873.firebaseio.com",
-    'projectId': "cpanel-5e873",
-    'storageBucket': "cpanel-5e873.appspot.com",
-    'messagingSenderId': "579985583952"
-}
 
-config = {
-    'apiKey': "AIzaSyAeJt4f9xOrdRxrHXoh2PDtjKAkHIQ4jl0",
-    'authDomain': "oficina-edc30.firebaseapp.com",
-    'databaseURL': "https://oficina-edc30.firebaseio.com",
-    'projectId': "oficina-edc30",
-    'storageBucket': "oficina-edc30.appspot.com",
-    'messagingSenderId': "138047878592",
-    'appId': "1:138047878592:web:1e8e64364bd71299",
-    } 
-firebase = pyrebase.initialize_app(config)
-auth = firebase.auth()
-def login(request):
-    return render(request, "oficina/login.html")
-
-def welcome(request):
-    email=request.produto.get('email')
-    passw = request.produto.get("pass")
-    try:
-        user = auth.sign_in_with_email_and_password(email,passw)
-    except:
-        message = "invalid cerediantials"
-        return render(request,"oficina/login.html",{"msg":message})
-    print(user)
-    return render(request, "oficina/welcome.html",{"e":email})
-'''
 def index(request):
     lista_produtos = Produto.objects.order_by('id')
     data = {
