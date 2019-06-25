@@ -1,0 +1,59 @@
+{% extends 'oficina/base.html'%}
+{% block title%}Produtos | Hugo Moto Peças{% endblock%}
+{% block content %}
+  <div class="card shadow mb-4">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Produtos</h6>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered " id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Descrição</th>
+                    <th>Quantidade</th>
+                    <th>Valor de Compra</th>
+                    <th>Valor de Venda</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                  
+                <tbody>
+                  {% for produto in produtos%}
+                  <tr>
+                    <td>{{produto.id}}</td>
+                    <td>{{produto.descricao}}</td>
+                    <td>{{produto.quantidade}}</td>
+                    <td>{{produto.valor_compra}}</td>
+                    <td>{{produto.valor_venda}}</td>
+                    <td>
+                      <a href="{% url 'oficina:atualizar_produto' produto.id%}">Editar </a>
+                      <a href="{% url 'oficina:apagar_produto' produto.id%}">Apagar</a>
+                    </td>
+                  </tr>
+                  {% endfor %}                  
+                </tbody>
+              </table>
+            </div> 
+            <!-- Paginação de Produtos -->
+            <div class="pagination">
+              <span class="step-links">
+                  {% if produtos.has_previous %}
+                      <a href="?page=1">&laquo; Primeira</a>
+                      <a href="?page={{ produtos.previous_page_number }}">Anterior</a>
+                  {% endif %}
+
+                  <span class="current">
+                      Página {{ produtos.number }} de {{ produtos.paginator.num_pages }}.
+                  </span>
+
+                  {% if produtos.has_next %}
+                      <a href="?page={{ produtos.next_page_number }}">Próxima</a>
+                      <a href="?page={{ produtos.paginator.num_pages }}">Ultima &raquo;</a>
+                  {% endif %}
+              </span>
+            </div>
+          </div>
+        </div>
+{% endblock %}
