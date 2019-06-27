@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from .forms import *
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 
 def index(request):
     lista_produtos = Produto.objects.order_by('id')
@@ -50,8 +51,8 @@ def atualizar_produto(request, id):
 
 def novo_produto(request):
     form = ProdutoForm()
-    if(request.method == 'produto'):
-        form = ProdutoForm(request.produto)
+    if(request.method == 'POST'):
+        form = ProdutoForm(request.POST)
         if(form.is_valid()):
             produto_descricao = form.cleaned_data['descricao']
             produto_quantidade = form.cleaned_data['quantidade']
@@ -74,10 +75,11 @@ def novo_produto(request):
                 'form': aux_form,
                 'alerta': True,
                 'msg': msg,
-                'tipo_alerta' : tipo
+                'tipo_alerta' : tipo                
             }
-            #return redirect('oficina:novo_produto',data=True)
+            
             return render(request, 'oficina/novoProduto.html',data)
+            
     elif(request.method == 'GET'):
         return render(request, 'oficina/novoProduto.html', {'form': form})
 
@@ -88,3 +90,47 @@ def fornecedores(request):
         "fornecedores": fornecedores
     }
     return render(request, "oficina/fornecedores.html",data)
+
+def novo_fornecedor(request):
+    form = EnderecoForm()
+    form_endereco = EnderecoForm()
+    data = {form: 'form', 'form_endereco': form_endereco}
+    if form.is_valid() and form_endereco.is_valid():
+        form.endereco.save()
+        form.instance.endereco = form_endereco.instance
+        form.save()
+        return redirect ('oficina/fornecedores.html')
+    return render(request,'oficina/novoFornecedor.html')
+####### Tentei Dessa forma tbm, msm assim não foi ########
+'''
+def novo_fornecedor(request):
+    form = FornecedorForm()
+    form_endereco = EnderecoForm()
+    data = {'form':form,'form_endereco':form_endereco}
+    if(request.method == 'POST'):
+        form = ProdutoForm(request.POST)
+        form_endereco = EnderecoForm(request.POST)
+        if form.is_valid() and form_endereco.is_valid():
+            descricao = form.cleaned_data['descricao']
+            cnpj = form.cleaned_data['cnpj']
+            observacao = form.cleaned_data['observacao']
+
+            logradouro= form_endereco.cleaned_data['logradouro']
+            numero= form_endereco.cleaned_data['numero']
+            bairro= form_endereco.cleaned_data['bairro']
+            cidade= form_endereco.cleaned_data['cidade']
+            estado= form_endereco.cleaned_data['estado']
+            complemento= form_endereco.cleaned_data['complemento']
+
+            novo_endereco = Endereco(logradouro=logradouro,numero=numero,bairro=bairro,cidade=cidade,estado=estado,complemento=complemento)
+            novo_endereco.save()
+
+            
+            novo_fornecedor = Fornecedor(descricao=descricao,cnpj=cnpj,observacao=observacao,endereco = novo_endereco.id)
+            novo_fornecedor.save()
+            
+            return redirect('oficina/fornecedores.html')
+    elif(request.method == 'GET'):
+        return render(request,'oficina/novoFornecedor.html',data)
+
+        '''

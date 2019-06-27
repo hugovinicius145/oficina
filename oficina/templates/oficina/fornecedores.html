@@ -1,5 +1,9 @@
 {% extends 'oficina/base.html'%}
 {% block title%} Fornecedores | Hugo Moto Peças{% endblock %}
-
+    
 {% block content%}
+{% for fornecedor in fornecedores%}
+    {{ fornecedor.descricao }}
+{% endfor %}
+
 {% endblock %}

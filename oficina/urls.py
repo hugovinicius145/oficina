@@ -9,6 +9,5 @@ urlpatterns = [
     path('produtos/delete/<int:id>/', views.apagar_produto, name='apagar_produto'),
     path('produtos/update/<int:id>/', views.atualizar_produto, name='atualizar_produto'),
     path('fornecedores/', views.fornecedores, name='fornecedores'),
-    #path('login/', views.login, name='login'),
-    #path('welcome/', views.welcome, name='welcome'),
+    path('fornecedores/new', views.novo_fornecedor, name='novo_fornecedor'),
 ]
