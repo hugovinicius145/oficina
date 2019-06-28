@@ -92,7 +92,7 @@ def fornecedores(request):
     return render(request, "oficina/fornecedores.html",data)
 
 def novo_fornecedor(request):
-    form = EnderecoForm()
+    form = FornecedorForm()
     form_endereco = EnderecoForm()
     data = {form: 'form', 'form_endereco': form_endereco}
     if form.is_valid() and form_endereco.is_valid():
@@ -100,7 +100,7 @@ def novo_fornecedor(request):
         form.instance.endereco = form_endereco.instance
         form.save()
         return redirect ('oficina/fornecedores.html')
-    return render(request,'oficina/novoFornecedor.html')
+    return render(request,'oficina/novoFornecedor.html',data)
 ####### Tentei Dessa forma tbm, msm assim não foi ########
 '''
 def novo_fornecedor(request):
