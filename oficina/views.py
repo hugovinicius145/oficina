@@ -96,7 +96,7 @@ def novo_fornecedor(request):
     form_endereco = EnderecoForm()
     data = {form: 'form', 'form_endereco': form_endereco}
     if form.is_valid() and form_endereco.is_valid():
-        form.endereco.save()
+        form_endereco.save()
         form.instance.endereco = form_endereco.instance
         form.save()
         return redirect ('oficina/fornecedores.html')
