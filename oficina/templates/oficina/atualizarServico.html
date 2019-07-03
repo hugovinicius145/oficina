@@ -1,4 +1,5 @@
-{% extends 'oficina/base.html'%}
+{% extends 'oficina/base.html' %}
+{% block title %} Editar Serviço | Hugo Moto Peças {% endblock %}
 {% block content %}
     {% load bootstrap %}
     {% if alerta %}
@@ -10,10 +11,8 @@
     <form action="{{ request.get_full_path }}" method="POST">
         {% csrf_token %}
             {{form|bootstrap}}
-            {{form_telefone|bootstrap}}
-            {{form_endereco|bootstrap}}
             
-        <input type="submit" class="btn btn-primary mb-2" value="Criar">
+        <input type="submit" class="btn btn-primary mb-2" value="Salvar">
     </form>
 
     <script type="text/javascript">

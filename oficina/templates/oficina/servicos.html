@@ -1,0 +1,56 @@
+{% extends 'oficina/base.html'%}
+{% block title%}Serviços | Hugo Moto Peças{% endblock%}
+{% block content %}
+  <div class="card shadow mb-4">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Servicos</h6>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered " id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Descrição</th>                    
+                    <th>Valor</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                  
+                <tbody>
+                  {% for servico in servicos%}
+                  <tr>
+                    <td>{{servico.id}}</td>
+                    <td>{{servico.descricao}}</td>                    
+                    <td>{{servico.valor}}</td>                    
+                    <td>
+                      <a href="{% url 'oficina:atualizar_servico' servico.id %}">Editar </a>
+                      <a href="{% url 'oficina:apagar_servico' servico.id %}">Apagar</a>
+                    </td>
+                  </tr>
+                  {% endfor %}       
+                  
+                </tbody>
+              </table>
+            </div> 
+            <!-- Paginação de Servicos -->
+            <div class="pagination">
+              <span class="step-links">
+                  {% if servicos.has_previous %}
+                      <a href="?page=1">&laquo; Primeira</a>
+                      <a href="?page={{ servico.previous_page_number }}">Anterior</a>
+                  {% endif %}
+
+                  <span class="current">
+                      Página {{ servico.number }} de {{ servico.paginator.num_pages }}.
+                  </span>
+
+                  {% if servico.has_next %}
+                      <a href="?page={{ servico.next_page_number }}">Próxima</a>
+                      <a href="?page={{ servico.paginator.num_pages }}">Ultima &raquo;</a>
+                  {% endif %}
+              </span>
+            </div>
+          </div>
+        </div>
+{% endblock %}

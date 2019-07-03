@@ -2,8 +2,48 @@
 {% block title%} Fornecedores | Hugo Moto Peças{% endblock %}
     
 {% block content%}
+{% load static%}
 {% for fornecedor in fornecedores%}
-    {{ fornecedor.descricao }}
-{% endfor %}
+<div class="card shadow mb-4">
+    <!-- Card Header - Dropdown -->
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">{{ fornecedor.descricao }}</h6>
+        <div class="dropdown no-arrow">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img src="https://img.icons8.com/windows/25/000000/menu-2.png">                
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                <div class="dropdown-header">Dropdown Header:</div>
+                <a class="dropdown-item" href="#">Detalhes</a>
+                <a class="dropdown-item" href="{% url 'oficina:atualizar_fornecedor' fornecedor.id %}">Editar</a>
+                <a class="dropdown-item" href="{% url 'oficina:apagar_fornecedor' fornecedor.id %}">Excluir</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+        </div>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body">
+        <div class="arrow" >
+            <p>Código: {{ fornecedor.id }}</p>
+        </div>
+        <div class="arrow" >
+            <p>CNPJ: {{ fornecedor.cnpj }}</p>
+        </div>
+        <div class="arrow">
+            <p>Observações: {{ fornecedor.observacao }}</p>
+        </div>
+        <div class="arrow">
+            <p>Telefone: {{ fornecedor.telefone.telefone }}</p>
+        </div>
 
+        <div class="arrow">
+            <p>Endereço: {{ fornecedor.endereco.logradouro }}, Nº {{ fornecedor.endereco.numero }}, {{fornecedor.endereco.bairro}}, {{ fornecedor.endereco.cidade }} {{ fornecedor.endereco.estado }},{{ fornecedor.endereco.complemento }}</p>
+        </div>
+        <div class="arrow">
+            
+        </div>
+    </div>
+</div>
+{% endfor %}
 {% endblock %}

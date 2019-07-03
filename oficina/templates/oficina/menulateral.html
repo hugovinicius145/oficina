@@ -7,7 +7,7 @@
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'oficina:index'%}">
         <div class="sidebar-brand-icon ">
-          <img src="https://img.icons8.com/dusk/40/000000/rocket.png">
+        <img src="https://img.icons8.com/color/48/000000/motorbike-helmet.png">
         </div>
         <div class="sidebar-brand-text mx-3">Hugo Moto Peças<sup></sup></div>
       </a>
@@ -24,7 +24,7 @@
         <div id="collapseVendas" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Opções para Vendas:</h6>
-            <a class="collapse-item" href="#">
+            <a class="collapse-item" href="{% url 'oficina:nova_venda'%}">
                 <img src="https://img.icons8.com/cute-clipart/15/000000/plus-math.png">
                 <span>Nova</span>
             </a>
@@ -66,9 +66,9 @@
         <div id="collapseClientes" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Opções para Clientes:</h6>
-            <a class="collapse-item" href="#">Cadastrar</a>
+            <a class="collapse-item" href="{% url 'oficina:novo_cliente'%}">Cadastrar</a>
             <a class="collapse-item" href="#">Alterar</a>
-            <a class="collapse-item" href="#">Detalhes</a>
+            <a class="collapse-item" href="{% url 'oficina:clientes'%}">Detalhes</a>
           </div>
         </div>
       </li>
@@ -87,6 +87,26 @@
                 <span>Novo</span>
             </a>
             <a class="collapse-item" href="{% url 'oficina:fornecedores' %}">
+                <img src="https://img.icons8.com/dusk/15/000000/show-property.png">
+                <span>Detalhes</span>
+            </a>
+          </div>
+        </div>
+      </li>
+      <!-- Aba Serviços -->  
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseServicos" aria-expanded="true" aria-controls="collapseTwo">
+          <img src="https://img.icons8.com/color/25/000000/full-tool-storage-box-.png">
+          <span>Serviços</span>
+        </a>
+        <div id="collapseServicos" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Opções para Serviços:</h6>
+            <a class="collapse-item" href="{% url 'oficina:novo_servico' %}">
+                <img src="https://img.icons8.com/cute-clipart/15/000000/plus-math.png">
+                <span>Novo</span>
+            </a>
+            <a class="collapse-item" href="{% url 'oficina:servicos' %}">
                 <img src="https://img.icons8.com/dusk/15/000000/show-property.png">
                 <span>Detalhes</span>
             </a>

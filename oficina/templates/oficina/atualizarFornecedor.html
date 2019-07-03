@@ -1,0 +1,14 @@
+{% extends 'oficina/base.html' %}
+{% block title %} Editar Fornecedor | Hugo Moto Peças {% endblock %}
+{% block content %}
+     {% load bootstrap %}
+     <form action="{{ request.get_full_path }}" method="POST">
+        {% csrf_token %}
+            {{form|bootstrap}}
+            {{form_telefone|bootstrap}}
+            {{form_endereco|bootstrap}}
+
+            
+        <input type="submit" class="btn btn-primary mb-2" value="Salvar">
+    </form>
+{% endblock %}

@@ -1,6 +1,12 @@
 {% extends 'oficina/base.html'%}
 {% block title%}Produtos | Hugo Moto Peças{% endblock%}
 {% block content %}
+  <div class="col-sm-6">
+    <form action="." method="GET" class="form-inline">
+      <input type="text" id="search" name="search" class="form-control" placeholder="Busca"> 
+      <input type="submit" class="btn btn-primary" style="margin-left: 10px;" value="Ok">
+    </form>
+  </div>
   <div class="card shadow mb-4">
           <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Produtos</h6>

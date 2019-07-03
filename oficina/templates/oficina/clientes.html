@@ -1,0 +1,47 @@
+{% extends 'oficina/base.html'%}
+{% block title%}Clientes | Hugo MotoPeças{% endblock %}
+{% block content %}
+    {% for cliente in clientes %}
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">{{ cliente.nome }}</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img src="https://img.icons8.com/windows/25/000000/menu-2.png">                
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-header">Opções para Clientes:</div>                    
+                    <a class="dropdown-item" href="{% url 'oficina:atualizar_cliente' cliente.id %}">Editar</a>
+                    <a class="dropdown-item" href="{% url 'oficina:apagar_cliente' cliente.id %}">Excluir</a>                    
+                </div>
+            </div>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="arrow" >
+                <p>Código: {{ cliente.id }}</p>
+            </div>
+            <div class="arrow" >
+                <p>CPF: {{ cliente.cpf }}</p>
+            </div>
+            <div class="arrow">
+                <p>Telefone: {{ cliente.telefone.telefone }}</p>
+            </div>
+
+            <div class="arrow">
+                <p>Endereço: {{ cliente.endereco.logradouro }}, Nº {{ cliente.endereco.numero }}, {{cliente.endereco.bairro}}, {{ cliente.endereco.cidade }} {{ cliente.endereco.estado }}, {{cliente.endereco.complemento}}</p>
+            </div>
+            <div class="arrow">
+                <p>Status: {{cliente.status}}</p>
+            </div>
+            <div class="arrow">
+                <p>Desde: {{cliente.created}}</p>
+            </div>
+            <div class="arrow">
+                <p>Modificado: {{cliente.modified}}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
