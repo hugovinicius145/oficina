@@ -1,6 +1,8 @@
 {% extends 'oficina/base.html'%}
 {% block title%}Clientes | Hugo MotoPeças{% endblock %}
 {% block content %}
+    {% include 'oficina/search.html'%}
+    {% if clientes%}
     {% for cliente in clientes %}
     <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
@@ -44,4 +46,11 @@
         </div>
     </div>
     {% endfor %}
+    {% else %}
+        <h1 class="h3 mb-2 text-gray-800">Desculpe! Nenhum {{ name }} Encontrado...</h1>
+        <p class="mb-4">Porfavor verifique o que foi digitado e tente novamente.
+        Para retornar ao Menu principal clique no botão abaixo</a>.</p>
+        
+        <a href="{% url url%}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Retornar</a>
+    {% endif %}
 {% endblock %}

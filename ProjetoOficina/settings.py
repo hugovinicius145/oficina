@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'oficina.apps.OficinaConfig',
     'bootstrapform',
+    'django_select2',
+    'select2',
+    
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -128,3 +131,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/account/login'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media_images')

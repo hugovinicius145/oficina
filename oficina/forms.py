@@ -1,10 +1,17 @@
 from django import forms
 from .models import *
+from django.forms import inlineformset_factory
+from django_select2.forms import *
+import select2.fields
+import select2.models
 
 class ProdutoForm(forms.ModelForm):
     class Meta:
         model = Produto
         fields = ["descricao","quantidade","valor_compra","valor_venda","categoria","codigo_fabrica"]
+        widgets = {
+            'categoria': Select2Widget,            
+        }
 
 class FornecedorForm(forms.ModelForm):
     class Meta:
@@ -31,12 +38,19 @@ class ServicoForm(forms.ModelForm):
         model = Servico
         fields = ["descricao","valor"]
 
-class VendaForm(forms.ModelForm):
+class OrcamentoVendaForm(forms.ModelForm):
     class Meta:
-        model = Venda
-        fields = ["tipo","cliente"]
+        model = OrcamentoVenda
+        fields = ["tipo","cliente","vendedor","status"]
+
 
 class ItemVendaForm(forms.ModelForm):
     class Meta:
         model = ItemVenda
-        fields = ["servico","produto","quantidade","preco","item_cancelado"]
+        fields = ("servico","produto","quantidade",)
+        
+    
+class VendaForm(forms.ModelForm):
+    class Meta:
+        model = Venda
+        fields = ["orcamento"]

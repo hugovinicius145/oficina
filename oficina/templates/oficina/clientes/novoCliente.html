@@ -1,0 +1,96 @@
+{% extends 'oficina/base.html'%}
+{% block title %} Cadastra Cliente | Hugo Moto Peças{% endblock %}
+{% block content %}
+    {% load static %}
+    {% load bootstrap %}
+    {% block javascript %}
+    <script src="{% static 'oficina/js/masks/masks.js' %}"></script>
+    <script>        
+        $(document).ready(function(){
+            $('#id_telefone').mask('(99) 99999-9999');
+            $('#id_cpf').mask('999.999.999-99');
+        });
+    </script>
+    {% endblock %}
+
+{% include 'oficina/msg.html'%}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Cadastrar Novo Cliente</h6>
+    </div>
+    <div class="card-body">
+        <div class="">          
+            <form action="{{ request.get_full_path }}" method="POST">
+            {% csrf_token %}             
+            <div class="row">
+                <div class="col-sm-12">
+                    {{ form_cliente.nome|bootstrap }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-1">
+                    {{ form_cliente.status|bootstrap }}
+                </div>
+                <div class="col-sm">
+                    {{ form_cliente.cpf|bootstrap }}
+                </div>
+                <div class="col-sm">
+                    {{ form_telefone|bootstrap }}
+                </div>
+                
+                
+            </div>
+
+            <div class="row">
+                    
+                <div class="col-sm">
+                    {{ form_endereco.logradouro|bootstrap }}
+                </div>
+                <div class="col-sm-1">
+                    {{ form_endereco.numero|bootstrap }}
+                </div>
+                <div class="col-sm">
+                    {{ form_endereco.bairro|bootstrap }}
+                </div>
+                
+                
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    {{ form_endereco.cidade|bootstrap }}
+                </div>
+                <div class="col-sm-3">
+                    {{ form_endereco.estado|bootstrap }}
+                </div>
+                <div class="col-sm">
+                    {{ form_endereco.complemento|bootstrap }}
+                </div>
+
+            </div>
+            <div style="float:right;margin-right:50px;margin-top:30px;" class="row">                                
+                <input id="input_enviar" type="image" src="https://img.icons8.com/color/55/000000/add.png" alt="">
+                <a href="{% url 'oficina:novo_cliente'%}" data-toggle="modal" data-target="#cancelModal"> <img src="https://img.icons8.com/color/55/000000/cancel.png"> </a>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Div Para Mostar Mensagem de confirmação de Cancelamento de Cadastro -->
+
+    <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Deseja cancelar o cadastro do Cliente?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Selecine "Sim" para Cancelar.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Não</button>
+          <a class="btn btn-primary" href="{% url 'oficina:novo_cliente' %}">Sim</a>
+        </div>
+      </div>
+    </div>  
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'oficina/base.html'%}
+{% block title%} Cadastra Produto | Hugo Moto Peças{% endblock %}
+{% block content%}    
+    {% include 'oficina/msg.html'%}
+    {% load bootstrap %}
+    
+    <div class="" role="alert" id="teste">
+
+    </div>
+    {% block javascript %}
+    <script>
+        
+        //Alterar Placeholder
+        
+        document.getElementById('id_valor_compra').placeholder = 'R$';
+        document.getElementById('id_valor_venda').placeholder = 'R$'; 
+           
+        // Alerta Se Produto Já Foi Cadastrado
+        $("#id_descricao").change(function () {
+        var descricao = $(this).val();
+        
+        $.ajax({
+            url: '{% url 'oficina:validar_descricao_produto'%}',
+            data: {
+            'descricao': descricao
+            },
+            dataType: 'json',
+            success: function (data) {
+            if (data.is_taken) {                                
+                document.getElementById('teste').className = 'alert alert-danger';
+                document.getElementById("teste").innerHTML=data.error_message;
+                // Esconde Icone de add caso produto já esteja cadastrado
+                document.getElementById('botao_enviar').style.display = "none";
+                document.getElementById('input_enviar').type = "text";
+                     
+            }
+            else{
+                document.getElementById('teste').className = '';
+                document.getElementById("teste").innerHTML="";
+                //Mostra os icones Novamente
+                document.getElementById('botao_enviar').style.display = "block";
+                document.getElementById('input_enviar').type = "image";                              
+            }
+            }
+        });
+
+        });
+        
+    </script>
+    {% endblock %}
+    
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Cadastrar Novo Produto</h6>
+        </div>
+        <div class="card-body">
+            <div class="">        
+                <!-- Formulario Para Cadastro de Cliente-->  
+                <form action="." method="POST">
+                {% csrf_token %}             
+                <div class="row">
+                    <div class="col-sm-12">
+                        {{ form.descricao|bootstrap }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        {{ form.quantidade|bootstrap }}
+                    </div>
+                    <div class="col-sm">
+                        {{ form.categoria|bootstrap }}
+                    </div>
+                    <div class="col-sm">
+                        {{ form.codigo_fabrica|bootstrap }}
+                    </div>
+                    <div class="col-sm">
+                        {{ form.valor_compra|bootstrap }}
+                    </div>
+                    <div class="col-sm">
+                        {{ form.valor_venda|bootstrap }}
+                    </div>
+                    
+                </div>
+
+                <!-- Botoes de Cancelar e Salvar -->
+                <div style="float:right;margin-right:50px;margin-top:30px;" class="row">                    
+                    <div id="botao_enviar">
+                        <input id="input_enviar" type="image" src="https://img.icons8.com/color/55/000000/add.png" alt="">
+                    </div>
+                    <a href="{% url 'oficina:novo_produto'%}" data-toggle="modal" data-target="#cancelModal"> <img src="https://img.icons8.com/color/55/000000/cancel.png"> </a>
+                </div>
+                </form>
+            </div>
+        </div>
+        
+    </div>      
+
+    <!-- Div Para Mostar Mensagem de confirmação de Cancelamento de Cadastro -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Deseja cancelar o cadastro do produto?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Selecine "Sim" para cancelar o produto.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Não</button>
+          <a class="btn btn-primary" href="{% url 'oficina:novo_produto' %}">Sim</a>
+        </div>
+      </div>
+    </div>  
+{% endblock %}

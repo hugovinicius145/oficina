@@ -1,0 +1,12 @@
+{% if alerta %}
+    <div class="{{tipo_alerta}}" role="alert" id="msg">
+        {{msg}}
+    </div>            
+{% endif %}
+<script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function(){ 
+            setTimeout(function() {
+                $("#msg").fadeOut().empty();
+            }, 2000);
+        }, false);        
+    </script>

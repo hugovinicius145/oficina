@@ -1,0 +1,214 @@
+{% extends 'oficina/base.html'%}
+{% block title %} Nova Venda | Hugo Moto Peças{% endblock %}
+{% block css%} 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css" rel="stylesheet" />
+{% endblock%}
+{% block content %}    
+{% load bootstrap %}        
+<div>
+    {% block javascript %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js"></script>
+    <script>
+     
+        $(document).ready(function() {
+            $('#id_servico').select2();
+        });
+        $(document).ready(function() {
+            $('#id_produto').select2();
+        });
+        
+        
+    </script>
+    {% endblock %}
+
+    <!-- Mensagem de erro se venda não for finalizada -->
+    {% if msg_erro_finalizar %}
+        <div class="alert alert-danger" role="alert" id="teste">
+            {{msg_erro_finalizar}}
+        </div>
+    {% endif %}
+    
+    <!-- Formulario da Venda-->
+    <div class="card shadow mb-4" >
+        
+        <div class="card-body">
+            <div class="">                       
+                <div class="row" style="margin-left:0px;">
+                    <div class="col-sm">
+                        Tipo de Pagamento
+                        <input id="tipo_orcamento" class="form-control" type="text" placeholder="{{ orcamento.tipo }}" readonly>
+                    </div>
+                    <div class="col-sm">
+                        Cliente
+                        <input class="form-control" type="text" placeholder="{{ orcamento.cliente }}" readonly>
+                    </div>
+                    <div class="col-sm">
+                        Vendedor
+                        <input class="form-control" type="text" placeholder="{{ orcamento.vendedor }}" readonly>
+                    </div>
+                    <div class="col-1" style="margin-top:30px;">
+                        <a href="{% url 'oficina:atualizar_orcamento' orcamento_id%}">
+                         <img id="botao_enviar" src="https://img.icons8.com/color/35/000000/edit.png">
+                        </a>
+                    </div>                                       
+                </div>
+                <form action="{{ request.get_full_path }}" method="POST"> 
+                    {% csrf_token %}   
+                    <div class="row" style="margin-left:0px;">                         
+                        <div class="col-sm-3">                     
+                            {{ form.servico|bootstrap }}                                                            
+                        </div>
+                        <div class="col-sm-6">                              
+                            {{ form.produto|bootstrap }}
+                        </div>
+                        <div class="col-sm-2">
+                            {{ form.quantidade|bootstrap }}                                                            
+                        </div>    
+                        <div class="col-sm-1" style="margin-top:33px;">
+                            <input type="image" src="https://img.icons8.com/color/35/000000/add.png" alt="Submit">                            
+                        </div>                     
+                    </div>
+                </form>                
+            </div>            
+        </div>
+    </div>
+    
+    </div>
+
+    <!-- Mensagem de erro se venda de produto ultrapassar estoque -->
+    {% if msg_estoque_baixo %}
+        <div class="alert alert-danger" role="alert" id="teste">
+            {{msg_estoque_baixo}}
+        </div>
+    {% endif %}
+    
+    <!-- Tabela para mostrar todos itens de vendas no Orcamento -->
+     <div class="card shadow mb-4" >
+        <div class="card-body"> 
+            <div class="table table-striped table-responsive">
+                <table class="table table-bordered " id="dataTable" width="100%" cellspacing="0">
+                <thead class="thead-dark">
+                    <tr>                    
+                    <th class="">Descrição</th>
+                    <th class="">QTD</th>                    
+                    <th class="">Preço UND</th>
+                    <th class="">Total</th>
+                    <th class="">Ações</th>
+                    </tr>
+                </thead>
+                    
+                <tbody>
+                    {% for item in lista_itens%}
+                    <tr>
+                        {% comment %} <td>{{item}}</td> {% endcomment %}
+                        <td>
+                        {% if item.produto != None %}
+                            {{item.produto.descricao}}
+                        {% elif item.servico != None%}
+                            {{item.servico.descricao}}
+                        {% endif %}
+                        </td>
+                        <td>{{item.quantidade}}</td>
+                        <td>R$ {{item.get_preco_und}}</td>    
+                        <td>R$ {{item.get_preco_total}} </td>                    
+                        <td>
+                            <a href="{% url 'oficina:atualizar_item' orcamento_id item.id%}"><img src="https://img.icons8.com/color/20/000000/edit.png"></a>
+                            <a href="{% url 'oficina:apagar_item' orcamento_id item.id%}"><img src="https://img.icons8.com/color/20/000000/delete.png"></a>
+                        </td>
+                    </tr>
+                    {% endfor %}       
+                    
+                </tbody>
+                </table>
+            </div>
+         </div>
+    </div> 
+
+    <!-- Div para o Valor total da Venda -->
+    <div class="col-sm-12 card border shadow h-100 py-2">
+        <div class="card-body">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">                        
+                    <div class="text-xs font-weight-bold gray-100 text-uppercase mb-1" style="font-size:20px;">Subtotal</div>                            
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1" style="font-size:20px;">Desconto</div>                            
+                    
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-size:20px;">Total</div>                        
+                    
+                </div>
+                
+                <div class="col-auto">
+                    <div style="font-size:25px;" class="h5 mb-0 font-weight-bold text-gray-800">R$ {{ valor_total}}</div>
+                    <div style="font-size:25px;" class="h5 mb-0 font-weight-bold text-gray-800">R$ 0,00</div>                    
+                    <div style="font-size:25px;" class="h5 mb-0 font-weight-bold text-gray-800">R$ {{ valor_total}}</div> 
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Botões de Finalizar ou Excluir Venda -->
+    <div style="margin-top:20px;">
+        <a href="{% url 'oficina:finalizar_venda' orcamento_id %}" >
+            <button type="button" class="btn btn-primary btn-lg btn-block">Finalizar Venda</button>
+        </a>
+    </div>
+
+    <div style="margin-top:20px;margin-bottom:20px;">
+        <a href="{% url 'oficina:apagar_orcamento' orcamento_id %}" data-toggle="modal" data-target="#cancelModal">
+            <button type="button" class="btn btn-danger btn-lg btn-block">Excluir Orçamento</button>
+        </a>
+    </div>    
+</div >
+
+<!-- Div Para Mostar Mensagem de excluir Orcamento de venda -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Deseja excluir esse orcamento?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Selecine "Sim" para excluir o orcamento.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Não</button>
+          <a class="btn btn-primary" href="{% url 'oficina:apagar_orcamento' orcamento_id %}">Sim</a>
+        </div>
+      </div>
+    </div> 
+
+<!-- Div Para Mostar Mensagem de Finalizar venda -->
+    <div class="modal fade" id="finishModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel2">Deseja Finalizar a Venda?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button><div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Deseja excluir esse orcamento?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Selecine "Sim" para excluir o orcamento.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Não</button>
+          <a class="btn btn-primary" href="{% url 'oficina:apagar_orcamento' orcamento_id %}">Sim</a>
+        </div>
+      </div>
+    </div> 
+        </div>
+        <div class="modal-body">Selecine "Sim" para Finalizar a Venda.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Não</button>
+          <a class="btn btn-primary" href="{% url 'oficina:finalizar_venda' orcamento_id %}">Sim</a>
+        </div>
+      </div>
+    </div> 
+
+{% endblock %}

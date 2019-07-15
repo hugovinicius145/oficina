@@ -1,11 +1,16 @@
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, render, redirect, render_to_response
 from .models import *
 from django.core.paginator import Paginator
 from .forms import *
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.views import generic
+from django.template import RequestContext
+from django.forms import inlineformset_factory, modelformset_factory, formset_factory
+from urllib.parse import urlencode
 ################ Produtos ###################
 def index(request):
     lista_produtos = Produto.objects.order_by('id')
@@ -15,18 +20,23 @@ def index(request):
     return render(request, "oficina/index.html",data)
 
 
-def produtos(request):
-    lista_produtos = Produto.objects.all()
+def produtos(request,order=None):
+    lista_produtos = Produto.objects.all().order_by('descricao')
     search = request.GET.get('search')
     if search:
-        lista_produtos = Produto.objects.filter(descricao__icontains=search)
-    paginator = Paginator(lista_produtos,30)
+        if search.isdigit():        
+            lista_produtos = Produto.objects.filter(id=search)
+        else:
+            lista_produtos = Produto.objects.filter(descricao__icontains=search)
+    
+    
+    '''paginator = Paginator(lista_produtos,4)
     page = request.GET.get('page')
-    produtos = paginator.get_page(page)
+    produtos = paginator.get_page(page)'''
     data = {        
-        'produtos': produtos,
+        'produtos': lista_produtos,
     }
-    return render(request, "oficina/produtos.html",data)
+    return render(request, "oficina/produtos/produtos.html",data)
 def apagar_produto(request,id):
     produto = get_object_or_404(Produto,pk=id)
     produto.delete()
@@ -42,9 +52,9 @@ def atualizar_produto(request, id):
                 form.save()
                 return redirect('oficina:produtos')
         else:
-            return render(request, 'oficina/atualizarProduto.html', {'form': form, 'produto' : produto})
+            return render(request, 'oficina/produtos/atualizarProduto.html', {'form': form, 'produto' : produto})
     elif(request.method == 'GET'):
-        return render(request, 'oficina/atualizarProduto.html', {'form': form, 'produto' : produto})
+        return render(request, 'oficina/produtos/atualizarProduto.html', {'form': form, 'produto' : produto})
 
 def novo_produto(request):
     form = ProdutoForm()
@@ -65,16 +75,26 @@ def novo_produto(request):
                 'msg': msg,
                 'tipo_alerta' : tipo                
             }            
-            return render(request, 'oficina/novoProduto.html',data)        
+            return render(request, 'oficina/produtos/novoProduto.html',data)                    
     elif(request.method == 'GET'):
-        return render(request, 'oficina/novoProduto.html', {'form': form})
+        return render(request, 'oficina/produtos/novoProduto.html', {'form': form})
+
+
+def validar_descricao_produto(request):
+    descricao = request.GET.get('descricao', None)
+    data = {
+        'is_taken': Produto.objects.filter(descricao__iexact=descricao).exists()
+    }
+    if data['is_taken']:
+        data['error_message'] = 'Existe um Produto Cadastrado com essa Descrição.'
+    return JsonResponse(data)
 ############ Fornecedores ################
 def fornecedores(request):
-    fornecedores = Fornecedor.objects.all()    
+    fornecedores = Fornecedor.objects.all().order_by('descricao')    
     data = {
         'fornecedores': fornecedores,
     }
-    return render(request, "oficina/fornecedores.html",data)
+    return render(request, "oficina/fornecedores/fornecedores.html",data)
 
 def novo_fornecedor(request):
     form = FornecedorForm()
@@ -110,8 +130,8 @@ def novo_fornecedor(request):
                 'msg': msg,
                 'tipo_alerta' : tipo
                 }
-            return render(request,'oficina/novoFornecedor.html',data)
-    return render(request,'oficina/novoFornecedor.html',data)
+            return render(request,'oficina/fornecedores/novoFornecedor.html',data)
+    return render(request,'oficina/fornecedores/novoFornecedor.html',data)
 
 def atualizar_fornecedor(request,id):
     fornecedor = get_object_or_404(Fornecedor,pk=id)    
@@ -136,7 +156,7 @@ def atualizar_fornecedor(request,id):
             return redirect('oficina:fornecedores')
             
     elif request.method == 'GET':
-        return render(request,'oficina/atualizarFornecedor.html',data)
+        return render(request,'oficina/fornecedores/atualizarFornecedor.html',data)
 def apagar_fornecedor(request,id):
     fornecedor = get_object_or_404(Fornecedor,pk=id)
     fornecedor.delete()
@@ -144,14 +164,23 @@ def apagar_fornecedor(request,id):
 
 ################### Clientes ################################
 def clientes(request):
-    lista_clientes = Cliente.objects.all()
+    lista_clientes = Cliente.objects.all().order_by('nome')
+    search = request.GET.get('search')
+    if search:
+        if search.isdigit():        
+            lista_clientes = Cliente.objects.filter(id=search)
+        else:
+            lista_clientes = Cliente.objects.filter(nome__icontains=search)
+        
     paginator = Paginator(lista_clientes,30)
     page = request.GET.get('page')
     clientes = paginator.get_page(page)
     data = {        
         'clientes': clientes,
+        'name':'Cliente',
+        'url':'oficina:clientes',
     }
-    return render(request, "oficina/clientes.html",data)
+    return render(request, "oficina/clientes/clientes.html",data)
 
 def apagar_cliente(request,id):
     cliente = get_object_or_404(Cliente,pk=id)
@@ -193,9 +222,9 @@ def novo_cliente(request):
                 'msg': msg,
                 'tipo_alerta' : tipo
                 }
-            return render(request,'oficina/novoCliente.html',data) 
+            return render(request,'oficina/clientes/novoCliente.html',data) 
     elif request.method == 'GET':
-        return render(request,'oficina/novoCliente.html',data)
+        return render(request,'oficina/clientes/novoCliente.html',data)
 
 def atualizar_cliente(request,id):
     cliente = get_object_or_404(Cliente,pk=id)
@@ -223,7 +252,7 @@ def atualizar_cliente(request,id):
             form_cliente.save()
             return redirect('oficina:clientes')       
     elif(request.method == 'GET'):
-        return render(request, 'oficina/atualizarCliente.html', data)
+        return render(request, 'oficina/clientes/atualizarCliente.html', data)
 
 ####################### Servicos ######################
 
@@ -235,7 +264,7 @@ def servicos(request):
     data = {        
         'servicos': servicos,
     }
-    return render(request, "oficina/servicos.html",data)
+    return render(request, "oficina/servicos/servicos.html",data)
 
 def apagar_servico(request,id):
     servico = get_object_or_404(Servico,pk=id)
@@ -263,9 +292,9 @@ def novo_servico(request):
                 'msg': msg,
                 'tipo_alerta' : tipo
                 }
-            return render(request,'oficina/novoServico.html',data) 
+            return render(request,'oficina/servicos/novoServico.html',data) 
     elif (request.method == 'GET'):
-        return render(request,'oficina/novoServico.html',data)
+        return render(request,'oficina/servicos/novoServico.html',data)
 def atualizar_servico(request,id):
     servico = get_object_or_404(Servico,pk=id)
     form  = ServicoForm(instance=servico)
@@ -288,34 +317,204 @@ def atualizar_servico(request,id):
                 'msg': msg,
                 'tipo_alerta' : tipo
                 }
-            return render(request,'oficina/atualizarServico.html',data) 
+            return render(request,'oficina/servicos/atualizarServico.html',data) 
     elif (request.method == 'GET'):
-        return render(request,'oficina/novoServico.html',data)
+        return render(request,'oficina/servicos/novoServico.html',data)
 
 ################### Vendas ########################
+
 def nova_venda(request):
-    form_venda = VendaForm()
-    form_item_venda = ItemVendaForm()
+    form_orcamento = OrcamentoVendaForm()
+    form_orcamento.initial['vendedor'] = request.user        
+    data = {'form_orcamento':form_orcamento,'vendedor':request.user}    
+    if request.method == 'POST':
+        form_orcamento = OrcamentoVendaForm(request.POST)    
+        
+        if form_orcamento.is_valid(): 
+            form_orcamento.save()
+            orcamento_id = form_orcamento.instance.id
+            return redirect('oficina:novo_item',orcamento_id=orcamento_id)            
+    elif request.method == 'GET':        
+        return render(request,'oficina/vendas/novaVenda.html',data)
 
-    data = {'form_venda':form_venda,'form_item_venda':form_item_venda}
+def finalizar_venda(request, orcamento_id):
+    orcamento = get_object_or_404(OrcamentoVenda,pk=orcamento_id)
+    orcamento.status = True
+    venda = Venda(orcamento=orcamento)    
+
+    ### Metodo para dar baixa no estoque
+    base_url = '/vendas/add/item/{}'.format(orcamento_id)
+    lista_itens = ItemVenda.objects.filter(orcamento=orcamento_id)
+    for item in lista_itens:
+        if item.produto_id != None:
+            produtos = Produto.objects.filter(id=item.produto_id)
+            for produto in produtos:
+                if produto.baixar_estoque(item.quantidade):
+                    produto.save()
+                else:
+                    msg_estoque_baixo = 'Quantidade de {} Excede o Estoque'.format(produto.descricao)
+                    query_string = urlencode({'msg_estoque_baixo': msg_estoque_baixo})
+                    url = '{}?{}'.format(base_url,query_string)                    
+                    return redirect(url)
+    try:
+        
+        orcamento.save()
+        venda.save()
+        return redirect('oficina:vendas')
+    except:
+        query_string = urlencode({'msg_erro_finalizar': 'Não Foi possivel Finalizar a Venda'})
+        url = '{}?{}'.format(base_url,query_string)
+        return redirect(url)
+
+
+
+def novo_item(request, orcamento_id):
+    orcamento = get_object_or_404(OrcamentoVenda,pk=orcamento_id)
     
-    if (request.method == 'POST'):
-        form_venda = VendaForm(request.POST)
-        if (form_venda.is_valid()):
-            try:
-                form_venda.instance.vendedor = request.user
-                form_venda.save()
-                msg = "venda Realizada Com Sucesso !!!"   
-                tipo = "alert alert-success"
-            except:
-                msg = "Erro ao Cadastar !!!"
-                tipo = "alert alert-danger"
+    form = ItemVendaForm()
+    lista_itens = ItemVenda.objects.filter(orcamento=orcamento_id).order_by('produto')
 
-            data = {
-                'form_venda':VendaForm(),
-                'alerta': True,
-                'msg': msg,
-                'tipo_alerta' : tipo,
-                }
-    elif(request.method == 'GET'):
-        return render(request,'oficina/novaVenda.html',data)
+    ### Mensagens de erro
+    msg_estoque_baixo = request.GET.get('msg_estoque_baixo')
+    msg_erro_finalizar = request.GET.get('msg_erro_finalizar')
+    
+    ### Variaveis para calcular preco de servico ou produto
+    valor_itens = []
+    for item in lista_itens:
+        valor_itens.append(item.get_preco_total())        
+    valor_total = sum(valor_itens)
+    ####
+    data = {
+        'form':form,
+        'lista_itens':lista_itens,
+        'orcamento_id':orcamento_id,
+        'valor_total':valor_total,
+        'orcamento':orcamento,
+        'servico' : 'Servico',
+        'produto' : 'Produto',
+        'msg_estoque_baixo':msg_estoque_baixo,
+        'msg_erro_finalizar':msg_erro_finalizar,
+    }
+    if request.method == 'POST':
+        form = ItemVendaForm(request.POST)            
+        if form.is_valid():
+            form.instance.orcamento_id = orcamento_id
+            form.save()                             
+            return redirect('oficina:novo_item',orcamento_id=orcamento_id)
+    elif request.method == 'GET':        
+        return render(request,'oficina/vendas/novoItemVenda.html',data)
+
+def atualizar_item(request, orcamento_id, id):
+    item = get_object_or_404(ItemVenda,pk=id)
+    form = ItemVendaForm(instance=item)
+    lista_itens = ItemVenda.objects.filter(orcamento=orcamento_id)
+    data = {'form':form,'lista_itens':lista_itens,'orcamento_id':orcamento_id}
+    if request.method == 'POST':
+        form = ItemVendaForm(request.POST,instance=item)            
+        if form.is_valid():
+            form.instance.orcamento_id = orcamento_id
+            form.save()                             
+            return redirect('oficina:novo_item',orcamento_id=orcamento_id)
+    elif request.method == 'GET':        
+        return render(request,'oficina/vendas/novoItemVenda.html',data)
+
+def search_itens(request):
+    descricao = request.GET.get('descricao', None)
+    item = Produto.objects.filter(descricao__icontains=descricao)
+    data = {
+        'item':item
+    }
+    
+    data = {
+        'item': Produto.objects.filter(descricao__icontains=descricao).exists()
+    }
+    
+    if data['item']:
+        data['msg'] = 'Produto Encontrado'        
+    return JsonResponse(data)
+            
+
+def apagar_item(request,orcamento_id,id):
+    item = get_object_or_404(ItemVenda,pk=id)
+    item.delete()
+    return redirect('/vendas/add/item/'+str(orcamento_id))
+
+def vendas(request):
+    lista_vendas = Venda.objects.all()
+    search = request.GET.get('search')
+    if search:
+        if search.isdigit():        
+            lista_vendas = Venda.objects.filter(id=search)
+        else:
+            lista_vendas = Venda.objects.filter(cliente__nome__icontains=search)
+        
+    paginator = Paginator(lista_vendas,30)
+    page = request.GET.get('page')
+    vendas = paginator.get_page(page)
+    data = {        
+        'vendas': vendas,
+    }
+    return render(request, "oficina/vendas/vendas.html",data)
+
+def orcamentos(request):
+    lista_orcamento = OrcamentoVenda.objects.all()
+    search = request.GET.get('search')
+    if search:
+        if search.isdigit():        
+            lista_orcamento = OrcamentoVenda.objects.filter(id=search)
+        else:
+            lista_orcamento = OrcamentoVenda.objects.filter(cliente__nome__icontains=search)
+        
+    paginator = Paginator(lista_orcamento,30)
+    page = request.GET.get('page')
+    orcamentos = paginator.get_page(page)    
+    data = {        
+        'orcamentos': orcamentos,    
+    }
+    return render(request, "oficina/vendas/orcamentoVendas.html",data)
+
+def apagar_orcamento(request, id):
+    orcamento = get_object_or_404(OrcamentoVenda,pk=id)
+    orcamento.delete()
+    return redirect('oficina:orcamentos')
+
+def atualizar_orcamento(request,id):
+    orcamento = get_object_or_404(OrcamentoVenda,pk=id)
+    form_orcamento = OrcamentoVendaForm(instance=orcamento)
+    # form_orcamento.initial['vendedor'] = request.user 
+    data = {'form_orcamento':form_orcamento}    
+    if request.method == 'POST':
+        form_orcamento = OrcamentoVendaForm(request.POST,instance=orcamento)                
+        if form_orcamento.is_valid():
+            form_orcamento.save()
+            orcamento_id = id
+            return redirect('oficina:novo_item',orcamento_id=orcamento_id)            
+    elif request.method == 'GET':        
+        return render(request,'oficina/vendas/atualizarOrcamentoVenda.html',data)
+
+############### Registrar usuarios ######################
+class register(generic.CreateView):
+    form_class = UserCreationForm
+    #success_url = reverse_lazy('login')
+    template_name = 'oficina/register.html'
+
+#####################################################
+def handler404(request, exception, template_name="404.html"):
+    response = render_to_response("404.html")
+    response.status_code = 404
+    return response
+
+
+######################
+
+def search_status(request):
+
+    if request.method == "GET":
+        search_text = request.GET['search_text']
+        if search_text is not None and search_text != u"":
+            search_text = request.GET['search_text']
+            statuss = Produto.objects.filter(descricao__contains = search_text)
+        else:
+            statuss = []
+
+        return render(request, 'teste.html', {'statuss':statuss})

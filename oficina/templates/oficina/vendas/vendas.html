@@ -1,0 +1,42 @@
+{% extends 'oficina/base.html'%}
+{% block title %}Vendas | Hugo Moto Peças{% endblock %}
+
+
+{% block content %}
+    {% include 'oficina/search.html'%}
+    {% if vendas%}
+    {% for venda in vendas %}
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">{{ venda.orcamento.cliente }}</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img src="https://img.icons8.com/windows/25/000000/menu-2.png">                
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-header">Opções para Clientes:</div>                    
+                    <a class="dropdown-item" href="">Editar</a>
+                    <a class="dropdown-item" href="">Excluir</a>                    
+                </div>
+            </div>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="arrow" >
+                <p>Código: {{ venda.id }}</p>
+            </div>
+            <div class="arrow" >
+                <p>Finalizada em: {{ venda.created }}</p>
+            </div>            
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+        <h1 class="h3 mb-2 text-gray-800">Desculpe! Nenhum  Encontrado...</h1>
+        <p class="mb-4">Porfavor verifique o que foi digitado e tente novamente.
+        Para retornar ao Menu principal clique no botão abaixo</a>.</p>
+        
+        <a href="" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Retornar</a>
+    {% endif %}
+{% endblock %}

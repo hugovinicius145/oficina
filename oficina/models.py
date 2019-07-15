@@ -5,7 +5,7 @@ class Categoria(models.Model):
     def __str__(self):
         return self.nome
 class Produto(models.Model):
-    descricao = models.CharField(max_length=255)
+    descricao = models.CharField(max_length=255,unique=True)
     quantidade = models.IntegerField()
     valor_compra = models.DecimalField(max_digits=9, decimal_places=2)
     valor_venda = models.DecimalField(max_digits=9, decimal_places=2)
@@ -15,7 +15,19 @@ class Produto(models.Model):
     codigo_fabrica = models.IntegerField(blank=True, null=True)
     
     def __str__(self):
-        return self.descricao
+        txt = '{} | QTD: {} | Preço: R${}'.format(self.descricao,self.quantidade,self.valor_venda)
+        return txt
+
+    def get_valor_venda(self):
+        return self.valor_venda
+    
+    def baixar_estoque(self,quantidade):
+        if (self.quantidade - quantidade) >= 0:        
+            self.quantidade = self.quantidade - quantidade
+            return True
+        else:
+            return False
+            
 
 class Endereco(models.Model):
     logradouro = models.CharField(max_length=255)
@@ -58,7 +70,7 @@ class Servico(models.Model):
 
 class Cliente(models.Model):
     nome = models.CharField(max_length=255)
-    cpf = models.CharField(max_length=11,blank=True, null=True)
+    cpf = models.CharField(max_length=255,blank=True, null=True)
     telefone = models.OneToOneField(Telefone, on_delete=models.SET_NULL, null=True)
     endereco = models.OneToOneField(Endereco, on_delete=models.SET_NULL, null=True)
     STATUS_CHOICES = (
@@ -75,15 +87,16 @@ class Cliente(models.Model):
     def get_telefone(self):
         return self.telefone.id
 
-class Venda(models.Model):
+class OrcamentoVenda(models.Model):
     TIPO_CHOICES = (
         ("DINHEIRO","DINHEIRO"),("CARTÂO","CARTÂO"),("PRAZO","PRAZO")
     )
-    tipo = models.CharField(max_length=8, choices=TIPO_CHOICES)
+    tipo = models.CharField(max_length=8, choices=TIPO_CHOICES, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     cliente = models.ForeignKey("Cliente", on_delete=models.CASCADE,blank=True, null=True)
-    vendedor = models.CharField(max_length=255)    
+    vendedor = models.CharField(max_length=255, null=True)
+    status = models.BooleanField()
     
     class Meta:
         ordering = ['-created']
@@ -93,13 +106,47 @@ class Venda(models.Model):
        lista.append(ItemVenda.objects.filter(venda=self.id))
        return len(lista)
 
+    def get_itens(self):
+        lista = ItemVenda.objects.filter(orcamento=self.id)
+        s = ""
+        for l in lista:
+            s = s + str(l) +""
+        return s
+
+class Venda(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    orcamento = models.OneToOneField(OrcamentoVenda, on_delete=models.SET_NULL,null=True)
+
 class ItemVenda(models.Model):
     servico = models.ForeignKey("Servico",on_delete=models.CASCADE,blank=True, null=True)
-    produto = models.ForeignKey("Produto",on_delete=models.CASCADE,blank=True, null=True)
-    venda = models.ForeignKey("Venda",on_delete=models.CASCADE)
-    quantidade = models.IntegerField()    
-    numero_item = models.IntegerField(verbose_name='Nº do Item', editable=False)
-    preco = models.DecimalField(verbose_name='Preço', max_digits=10, decimal_places=2)
-    item_cancelado = models.BooleanField(verbose_name='Item cancelado', default=False)
-
+    produto = models.ForeignKey("Produto",on_delete=models.CASCADE,blank=True, null=True)    
+    orcamento = models.ForeignKey("OrcamentoVenda",on_delete=models.CASCADE,blank=True, null=True)
+    quantidade = models.IntegerField()
     
+    def __str__(self):
+        if self.servico != None:
+            return str(self.servico)
+        if self.produto != None:
+            return str(self.produto)
+
+    def get_preco_und(self):
+        if self.produto != None:
+            return (self.produto.valor_venda)
+        elif self.servico != None:
+            return (self.servico.valor)
+            
+    def get_preco_total(self):
+        if self.produto != None:
+            return (self.produto.valor_venda * self.quantidade)
+        elif self.servico != None:
+            return (self.servico.valor * self.quantidade)
+
+'''
+class ItemCaixa(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    despesa = models.CharField(max_length=255, null=True, blank=True)
+
+
+class Caixa(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+'''
