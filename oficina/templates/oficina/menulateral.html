@@ -28,11 +28,8 @@
                 <img src="https://img.icons8.com/cute-clipart/15/000000/plus-math.png">
                 <span>Nova</span>
             </a>
+            
             <a class="collapse-item" href="{% url 'oficina:orcamentos'%}">
-                <img src="https://img.icons8.com/cotton/15/000000/document-1.png">
-                <span>Orcamentos</span>
-            </a>
-            <a class="collapse-item" href="{% url 'oficina:vendas'%}">
                 <img src="https://img.icons8.com/dusk/15/000000/time-machine.png">
                 <span>Histórico</span>
             </a>
@@ -70,9 +67,14 @@
         <div id="collapseClientes" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Opções para Clientes:</h6>
-            <a class="collapse-item" href="{% url 'oficina:novo_cliente'%}">Cadastrar</a>
-            <a class="collapse-item" href="#">Alterar</a>
-            <a class="collapse-item" href="{% url 'oficina:clientes'%}">Detalhes</a>
+            <a class="collapse-item" href="{% url 'oficina:novo_cliente' %}">
+                <img src="https://img.icons8.com/cute-clipart/15/000000/plus-math.png">
+                <span>Novo</span>
+            </a>
+            <a class="collapse-item" href="{% url 'oficina:clientes'%}">
+                <img src="https://img.icons8.com/dusk/15/000000/show-property.png">
+                <span>Detalhes</span>
+            </a>
           </div>
         </div>
       </li>

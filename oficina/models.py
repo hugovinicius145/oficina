@@ -1,4 +1,5 @@
 from django.db import models
+import datetime
 class Categoria(models.Model):
     nome = models.CharField(max_length=255)
 
@@ -13,7 +14,10 @@ class Produto(models.Model):
     modified = models.DateTimeField(auto_now=True)
     categoria = models.ForeignKey(to=Categoria, on_delete=models.CASCADE, blank=True, null=True)
     codigo_fabrica = models.IntegerField(blank=True, null=True)
-    
+
+    class Meta:
+        ordering = ['descricao']
+
     def __str__(self):
         txt = '{} | QTD: {} | Preço: R${}'.format(self.descricao,self.quantidade,self.valor_venda)
         return txt
@@ -41,7 +45,7 @@ class Endereco(models.Model):
     estado = models.CharField(max_length=2, choices=ESTADOS_CHOICES)
 
 class Telefone(models.Model):
-    telefone = models.CharField(max_length=20)    
+    telefone = models.CharField(max_length=255)    
     def get_id(self):
         return self.id
     def __str__(self):
@@ -50,7 +54,7 @@ class Telefone(models.Model):
 
 class Fornecedor(models.Model):
     descricao = models.CharField(max_length=255)
-    cnpj = models.CharField(max_length=14, blank=True, null=True)
+    cnpj = models.CharField(max_length=255, blank=True, null=True)
     endereco = models.OneToOneField(Endereco, on_delete=models.SET_NULL, null=True)
     observacao = models.CharField(max_length=255,blank=True, null=True)
     telefone = models.OneToOneField(Telefone,on_delete=models.SET_NULL,null=True)
@@ -96,15 +100,18 @@ class OrcamentoVenda(models.Model):
     modified = models.DateTimeField(auto_now=True)
     cliente = models.ForeignKey("Cliente", on_delete=models.CASCADE,blank=True, null=True)
     vendedor = models.CharField(max_length=255, null=True)
-    status = models.BooleanField()
-    
+    status = models.BooleanField()    
+    desconto = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True)
+
     class Meta:
         ordering = ['-created']
     
     def numero_itens(self):       
-       lista = []
-       lista.append(ItemVenda.objects.filter(venda=self.id))
-       return len(lista)
+       itens = ItemVenda.objects.filter(orcamento=self.id)
+       total = 0
+       for item in itens:
+           total = total + item.quantidade
+       return total
 
     def get_itens(self):
         lista = ItemVenda.objects.filter(orcamento=self.id)
@@ -113,6 +120,19 @@ class OrcamentoVenda(models.Model):
             s = s + str(l) +""
         return s
 
+    def preco_total(self):
+        if self.desconto == None:
+            return self.get_preco_subtotal() - 0
+        elif (self.get_preco_subtotal() - self.desconto) >= 0:
+            return self.get_preco_subtotal() - self.desconto
+
+    def get_preco_subtotal(self):
+        itens = ItemVenda.objects.filter(orcamento=self.id)
+        total = 0
+        for item in itens:
+            total = total + item.get_preco_total()
+        return total
+        
 class Venda(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     orcamento = models.OneToOneField(OrcamentoVenda, on_delete=models.SET_NULL,null=True)

@@ -28,11 +28,11 @@ urlpatterns = [
     path('servicos/edit/<int:id>/', views.atualizar_servico, name='atualizar_servico'),
     #######################################
     path('vendas/', views.vendas, name='vendas'),
+    path('vendas/detail/<int:orcamento_id>/', views.detail_orcamento, name='detail_orcamento'),    
     path('orcamentos/', views.orcamentos, name='orcamentos'),
     path('orcamentos/delete/<int:id>/', views.apagar_orcamento, name='apagar_orcamento'),
     path('orcamentos/edit/<int:id>/', views.atualizar_orcamento, name='atualizar_orcamento'),
-    path('vendas/new', views.nova_venda, name='nova_venda'),
-    path('vendas/search/item/', views.search_itens, name='search_itens'),
+    path('vendas/new', views.nova_venda, name='nova_venda'),    
     path('vendas/add/item/<int:orcamento_id>/', views.novo_item, name='novo_item'),
     path('vendas/delete/item/<int:orcamento_id>/<int:id>/', views.apagar_item, name='apagar_item'),
     path('vendas/edit/item/<int:orcamento_id>/<int:id>/', views.atualizar_item, name='atualizar_item'),

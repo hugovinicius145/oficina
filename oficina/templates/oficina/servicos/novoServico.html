@@ -7,6 +7,14 @@
             {{msg}}
         </div>                   
     {% endif %}
+    {% block javascript %}
+    <script>
+        
+        //Alterar Placeholder
+        
+        document.getElementById('id_valor').placeholder = 'R$';
+    </script>
+    {% endblock %}
 
     {% load bootstrap %}
     <div class="card shadow mb-4">

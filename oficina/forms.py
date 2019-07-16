@@ -41,9 +41,8 @@ class ServicoForm(forms.ModelForm):
 class OrcamentoVendaForm(forms.ModelForm):
     class Meta:
         model = OrcamentoVenda
-        fields = ["tipo","cliente","vendedor","status"]
-
-
+        fields = ["tipo","cliente","vendedor","status","desconto"]
+        
 class ItemVendaForm(forms.ModelForm):
     class Meta:
         model = ItemVenda

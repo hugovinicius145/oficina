@@ -7,15 +7,30 @@
     {% block javascript %}
     <script src="{% static 'oficina/js/masks/masks.js' %}"></script>
     <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function(){ 
+            setTimeout(function() {
+                $("#msg").fadeOut().empty();
+            }, 2000);
+        }, false);  
+
         $(document).ready(function(){            
             $("#id_telefone").mask("(99) 99999-9999");
             $("#id_cnpj").mask("99.999.999/9999-99");
         });
     </script>
     {% endblock %}
-    {% include 'oficina/msg.html'%}
+    
+    {% if msg_sucesso %}
+        <div class="alert alert-success" role="alert" id="msg">
+            {{msg_sucesso}}
+        </div>   
+    {% elif msg_erro %}    
+    <div class="alert alert-danger" role="alert" id="msg">
+            {{msg_erro}}
+        </div>        
+    {% endif %}
 
-<div class="card shadow mb-4">
+    <div class="card shadow mb-4">
     <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Cadastrar Novo Fornecedor</h6>
     </div>
@@ -34,10 +49,11 @@
                 </div>
                 <div class="col-sm-5">
                     {{ form.observacao|bootstrap }}
-                </div>  
+                </div>
                 <div class="col-sm-4">
                     {{ form_telefone|bootstrap }}
-                </div>                                
+                </div>
+                
                 
             </div>
 
@@ -68,7 +84,7 @@
 
             </div>
             <div style="float:right;margin-right:50px;margin-top:30px;" class="row">                                
-                <input id="input_enviar" type="image" src="https://img.icons8.com/color/55/000000/add.png" alt="submit">
+                <input id="input_enviar" type="image" src="https://img.icons8.com/color/55/000000/add.png" alt="">
                 <a href="{% url 'oficina:novo_fornecedor'%}" data-toggle="modal" data-target="#cancelModal"> <img src="https://img.icons8.com/color/55/000000/cancel.png"> </a>
             </div>
             </form>
@@ -81,7 +97,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Deseja cancelar as Alterações?</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Deseja cancelar o cadastro do Cliente?</h5>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
@@ -89,11 +105,10 @@
         <div class="modal-body">Selecine "Sim" para Cancelar.</div>
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Não</button>
-          <a class="btn btn-primary" href="{% url 'oficina:fornecedores' %}">Sim</a>
+          <a class="btn btn-primary" href="{% url 'oficina:novo_fornecedor' %}">Sim</a>
         </div>
       </div>
     </div>  
 
-    
 {% endblock %}
 

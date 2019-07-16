@@ -13,11 +13,12 @@ from django.forms import inlineformset_factory, modelformset_factory, formset_fa
 from urllib.parse import urlencode
 ################ Produtos ###################
 def index(request):
-    lista_produtos = Produto.objects.order_by('id')
+    '''lista_produtos = Produto.objects.order_by('id')
     data = {
         'lista_produtos' : lista_produtos,
     }
-    return render(request, "oficina/index.html",data)
+    return render(request, "oficina/index.html",data)'''
+    return redirect('oficina:orcamentos')
 
 
 def produtos(request,order=None):
@@ -100,7 +101,17 @@ def novo_fornecedor(request):
     form = FornecedorForm()
     form_endereco = EnderecoForm()
     form_telefone = TelefoneForm()
-    data = {'form': form, 'form_endereco': form_endereco,'form_telefone':form_telefone}
+
+    base_url = '/fornecedores/new'
+    msg_sucesso = request.GET.get('msg_sucesso')
+    msg_erro = request.GET.get('msg_erro')    
+    data = {
+        'form': form, 
+        'form_endereco': form_endereco,
+        'form_telefone':form_telefone,
+        'msg_sucesso':msg_sucesso,
+        'msg_erro':msg_erro,        
+        }
     if (request.method == 'POST'):
         form = FornecedorForm(request.POST)
         form_endereco = EnderecoForm(request.POST)
@@ -109,28 +120,20 @@ def novo_fornecedor(request):
             try:
                 form_endereco.save()
                 form.instance.endereco = form_endereco.instance
-                        
-                #form.save()
+                                        
                 form_telefone.save()
                 form.instance.telefone = form_telefone.instance
-                form.save()
-                #form_telefone.instance.fornecedor = form.instance
-                # form_telefone.save()
+
+                form.save() 
                 ###### Variaveis para mostrar na tela se foi cadastrado ou deu erro #######
-                msg = "Fornecedor Cadastrado com Sucesso !!!"   
-                tipo = "alert alert-success"
+                msg_sucesso = "Fornecedor Cadastrado com Sucesso !!!" 
+                query_string = urlencode({'msg_sucesso': msg_sucesso})                 
             except:
-                msg = "Erro ao Cadastar !!!"
-                tipo = "alert alert-danger"
-            data = {
-                'form': FornecedorForm(), 
-                'form_endereco': EnderecoForm(),
-                'form_telefone': TelefoneForm(),
-                'alerta': True,
-                'msg': msg,
-                'tipo_alerta' : tipo
-                }
-            return render(request,'oficina/fornecedores/novoFornecedor.html',data)
+                msg_erro = "Erro ao Cadastar !!!" 
+                query_string = urlencode({'msg_erro': msg_erro}) 
+
+            url = '{}?{}'.format(base_url,query_string)                                                   
+            return redirect(url)  
     return render(request,'oficina/fornecedores/novoFornecedor.html',data)
 
 def atualizar_fornecedor(request,id):
@@ -142,18 +145,37 @@ def atualizar_fornecedor(request,id):
 
     telefone = get_object_or_404(Telefone,pk=fornecedor.get_telefone())
     form_telefone = TelefoneForm(instance=telefone)
-    data = {'form':form, 'form_endereco':form_endereco,'form_telefone':form_telefone}
+
+    base_url = '/fornecedores/edit/{}'.format(fornecedor.id)
+    msg_sucesso = request.GET.get('msg_sucesso')
+    msg_erro = request.GET.get('msg_erro')  
+    data = {
+        'form':form,
+        'form_endereco':form_endereco,
+        'form_telefone':form_telefone,
+        'fornecedor':fornecedor,
+        'msg_sucesso':msg_sucesso,
+        'msg_erro':msg_erro,
+        }
     if request.method == 'POST':
         form = FornecedorForm(request.POST, instance = fornecedor)
         form_endereco = EnderecoForm(request.POST,instance=endereco)
         form_telefone = TelefoneForm(request.POST,instance=telefone)
         if form.is_valid() and form_endereco.is_valid() and form_telefone.is_valid():
-            form_endereco.save()
-            form.instance.endereco = form_endereco.instance
-            form_telefone.save()
-            form.instance.telefone = form_telefone.instance
-            form.save()
-            return redirect('oficina:fornecedores')
+            try:
+                form_endereco.save()
+                form.instance.endereco = form_endereco.instance
+                form_telefone.save()
+                form.instance.telefone = form_telefone.instance
+                form.save()
+                msg_sucesso = "Fornecedor Atualizado com Sucesso !!!" 
+                query_string = urlencode({'msg_sucesso': msg_sucesso})
+            except:
+                msg_erro = "Erro ao Atualizar !!!" 
+                query_string = urlencode({'msg_erro': msg_erro}) 
+
+            url = '{}?{}'.format(base_url,query_string)
+            return redirect(url)
             
     elif request.method == 'GET':
         return render(request,'oficina/fornecedores/atualizarFornecedor.html',data)
@@ -360,13 +382,11 @@ def finalizar_venda(request, orcamento_id):
         
         orcamento.save()
         venda.save()
-        return redirect('oficina:vendas')
+        return redirect('oficina:orcamentos')
     except:
         query_string = urlencode({'msg_erro_finalizar': 'Não Foi possivel Finalizar a Venda'})
         url = '{}?{}'.format(base_url,query_string)
         return redirect(url)
-
-
 
 def novo_item(request, orcamento_id):
     orcamento = get_object_or_404(OrcamentoVenda,pk=orcamento_id)
@@ -377,23 +397,17 @@ def novo_item(request, orcamento_id):
     ### Mensagens de erro
     msg_estoque_baixo = request.GET.get('msg_estoque_baixo')
     msg_erro_finalizar = request.GET.get('msg_erro_finalizar')
-    
-    ### Variaveis para calcular preco de servico ou produto
-    valor_itens = []
-    for item in lista_itens:
-        valor_itens.append(item.get_preco_total())        
-    valor_total = sum(valor_itens)
-    ####
+
     data = {
         'form':form,
         'lista_itens':lista_itens,
         'orcamento_id':orcamento_id,
-        'valor_total':valor_total,
+        'valor_total':orcamento.preco_total,
         'orcamento':orcamento,
         'servico' : 'Servico',
         'produto' : 'Produto',
         'msg_estoque_baixo':msg_estoque_baixo,
-        'msg_erro_finalizar':msg_erro_finalizar,
+        'msg_erro_finalizar':msg_erro_finalizar,        
     }
     if request.method == 'POST':
         form = ItemVendaForm(request.POST)            
@@ -417,30 +431,14 @@ def atualizar_item(request, orcamento_id, id):
             return redirect('oficina:novo_item',orcamento_id=orcamento_id)
     elif request.method == 'GET':        
         return render(request,'oficina/vendas/novoItemVenda.html',data)
-
-def search_itens(request):
-    descricao = request.GET.get('descricao', None)
-    item = Produto.objects.filter(descricao__icontains=descricao)
-    data = {
-        'item':item
-    }
-    
-    data = {
-        'item': Produto.objects.filter(descricao__icontains=descricao).exists()
-    }
-    
-    if data['item']:
-        data['msg'] = 'Produto Encontrado'        
-    return JsonResponse(data)
             
-
 def apagar_item(request,orcamento_id,id):
     item = get_object_or_404(ItemVenda,pk=id)
     item.delete()
     return redirect('/vendas/add/item/'+str(orcamento_id))
 
 def vendas(request):
-    lista_vendas = Venda.objects.all()
+    '''lista_vendas = Venda.objects.all()
     search = request.GET.get('search')
     if search:
         if search.isdigit():        
@@ -453,11 +451,12 @@ def vendas(request):
     vendas = paginator.get_page(page)
     data = {        
         'vendas': vendas,
-    }
-    return render(request, "oficina/vendas/vendas.html",data)
+    }'''
+    # return render(request, "oficina/vendas/vendas.html",data)
+    return redirect('oficina:orcamentos')
 
 def orcamentos(request):
-    lista_orcamento = OrcamentoVenda.objects.all()
+    lista_orcamento = OrcamentoVenda.objects.all().order_by('-modified')
     search = request.GET.get('search')
     if search:
         if search.isdigit():        
@@ -491,6 +490,16 @@ def atualizar_orcamento(request,id):
             return redirect('oficina:novo_item',orcamento_id=orcamento_id)            
     elif request.method == 'GET':        
         return render(request,'oficina/vendas/atualizarOrcamentoVenda.html',data)
+
+def detail_orcamento(request, orcamento_id):
+    orcamento = get_object_or_404(OrcamentoVenda,pk=orcamento_id)        
+    lista_itens = ItemVenda.objects.filter(orcamento=orcamento_id).order_by('produto')    
+    data = {
+        'lista_itens':lista_itens,        
+        'orcamento':orcamento,
+    }
+    return render(request,'oficina/vendas/detail.html',data)
+
 
 ############### Registrar usuarios ######################
 class register(generic.CreateView):

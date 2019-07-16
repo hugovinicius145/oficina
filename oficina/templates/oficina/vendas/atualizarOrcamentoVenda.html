@@ -1,6 +1,14 @@
 {% extends 'oficina/base.html'%}
 {% block title %} Editar Venda | Hugo Moto Peças{% endblock %}
 {% block content %}
+    {% block javascript %}
+    <script>
+        
+        //Alterar Placeholder
+        
+        document.getElementById('id_valor_compra').placeholder = 'R$';
+    </script>
+    {% endblock %}
     {% load bootstrap %}
     <form action="{{ request.get_full_path }}" method="POST">
         {% csrf_token %}        
