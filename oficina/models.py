@@ -114,11 +114,17 @@ class OrcamentoVenda(models.Model):
        return total
 
     def get_itens(self):
-        lista = ItemVenda.objects.filter(orcamento=self.id)
-        s = ""
-        for l in lista:
-            s = s + str(l) +""
-        return s
+        return ItemVenda.objects.filter(orcamento=self.id)
+        
+    def get_itens_vendidos(self):
+        if self.status:
+            lista_itens = ItemVenda.objects.filter(orcamento=self.id)
+            lista_final = []
+            for item in lista_itens:
+                if item.produto != None:
+                    lista_final.append(item.produto.descricao)
+                    #lista_final = lista_final + item.produto.descricao
+            return lista_final
 
     def preco_total(self):
         if self.desconto == None:
@@ -160,6 +166,7 @@ class ItemVenda(models.Model):
             return (self.produto.valor_venda * self.quantidade)
         elif self.servico != None:
             return (self.servico.valor * self.quantidade)
+        
 
 '''
 class ItemCaixa(models.Model):

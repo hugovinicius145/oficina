@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'oficina.apps.OficinaConfig',
+    'relatorios.apps.RelatoriosConfig',
     'bootstrapform',
     'django_select2',
     'select2',
