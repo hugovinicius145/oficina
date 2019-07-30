@@ -1,0 +1,26 @@
+{% extends 'oficina/base.html'%}
+{% block title %}Editar Pedido | Hugo Moto Peças {% endblock %}
+{% load bootstrap%}
+{% block content %}
+<div class="card shadow mb-4" >    
+    <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">Adicionar Item para Pedido</h6>
+    </div>
+    <div class="card-body">
+        <form action="{{ request.get_full_path }}" method="POST"> 
+            {% csrf_token %}   
+            <div class="row" style="margin-left:0px;">                         
+                <div class="col-sm-9">                     
+                    {{ form.descricao|bootstrap }}                                                            
+                </div>
+                <div class="col-sm-2">                              
+                    {{ form.quantidade|bootstrap }}
+                </div>            
+                <div class="col-sm-1" style="margin-top:33px;">
+                    <input type="image" src="https://img.icons8.com/color/35/000000/add.png" alt="Submit">                            
+                </div>                     
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

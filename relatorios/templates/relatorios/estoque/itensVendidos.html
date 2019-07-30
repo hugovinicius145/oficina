@@ -1,0 +1,52 @@
+{% extends 'oficina/base.html'%}
+{% block title %} Itens Vendidos | Hugo Moto Peças {% endblock %}
+{% load static %}
+{% block javascript %}
+<script src="{% static 'oficina/js/masks/masks.js' %}"></script>
+<script>        
+    $(document).ready(function(){        
+        $('#id_dataInicial').mask('99/99/9999');
+        $('#id_dataFinal').mask('99/99/9999');
+    });
+</script>
+{% endblock %}
+{% load bootstrap %}
+{% block content %}
+    <div class="card shadow mb-4" >
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-primary">Defina Um Periodo</h6>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+            <form action="{{ request.get_full_path }}" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="form-group col-sm-2">                        
+                        {{ form.dataInicial|bootstrap }}
+                    </div>
+                    <div style="margin-top:40px;">
+                        <h6 class="m-0 font-weight-bold text-primary">Até</h6>
+                    </div>
+                    <div class="form-group col-sm-2">                        
+                        {{ form.dataFinal|bootstrap }}
+                    </div>
+                    <div style="margin-top:30px;" class="form-group col-sm-2">
+                        <input type="submit" class="btn btn-primary mb-2" value="Continuar">
+                    </div>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+    lista:
+    {% for itens in lista_final %}
+        {% for item in itens %}
+            {{ item }},
+        {% endfor %}
+    {% endfor %}
+    </br>
+    br:
+    {{ periodo }}
+    </br>
+   
+{% endblock %}
