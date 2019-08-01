@@ -1,9 +1,6 @@
 from django import forms
 from .models import *
-from django.forms import inlineformset_factory
 from django_select2.forms import *
-import select2.fields
-import select2.models
 
 class ProdutoForm(forms.ModelForm):
     class Meta:
