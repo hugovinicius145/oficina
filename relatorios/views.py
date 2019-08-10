@@ -77,21 +77,44 @@ def itens_vendidos(request):
 
 ##### Pedidos #####################################
 
-
-def pedidos(request):
+def novo_pedido(request):
     form = ItemPedidoForm()
-    lista_itens = ItemPedido.objects.all().order_by('descricao')
     data = {
-        'form':form,
-        'lista_itens':lista_itens,
-        }
+        'form':form
+    }
     if request.method == 'POST':
         form = ItemPedidoForm(request.POST)
         if form.is_valid():
             form.save() 
             return redirect('relatorios:pedidos')
     elif request.method == 'GET':  
+        return render(request, "relatorios/pedidos/new.html",data)
+    
+def pedidos(request):     
+    produtos = Produto.objects.all()
+    estoque_baixo = []
+    for produto in produtos:
+        if produto.get_estoque_baixo():
+            estoque_baixo.append(produto)
+    lista_itens = ItemPedido.objects.all().order_by('descricao')    
+    data = {        
+        'lista_itens':lista_itens,
+        'lista_estoque_baixo':estoque_baixo,
+        }    
+    if request.method == 'GET':  
         return render(request, "relatorios/pedidos/index.html",data)
+
+def pedidos_estoque_baixo(request):     
+    produtos = Produto.objects.all().order_by('descricao')
+    estoque_baixo = []
+    for produto in produtos:
+        if produto.get_estoque_baixo():
+            estoque_baixo.append(produto)       
+    data = {                
+        'lista_estoque_baixo':estoque_baixo,
+        }    
+    if request.method == 'GET':  
+        return render(request, "relatorios/pedidos/estoque_baixo.html",data)
 
 def apagar_pedido(request,item_id):
     item_pedido = get_object_or_404(ItemPedido,pk=item_id)
@@ -114,7 +137,7 @@ def atualizar_pedido(request,id):
 
       
 ######## Funcoes Auxiliares  ######################################################
-         
+
 def mudar_horario(data_banco):
     horario_banco = str(data_banco)[0:19]
 
