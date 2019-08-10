@@ -1,19 +1,44 @@
 {% extends 'oficina/base.html'%}
 {% block title %} Editar Venda | Hugo Moto Peças{% endblock %}
+{% block css%} 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css" rel="stylesheet" />
+{% endblock%}
 {% block content %}
-    {% block javascript %}
-    <script>
-        
-        //Alterar Placeholder
-        
-        document.getElementById('id_valor_compra').placeholder = 'R$';
+    {% block javascript %}    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js"></script>
+    <script>     
+        $(document).ready(function() {
+            $('#id_tipo').select2();
+        });
+        $(document).ready(function() {
+            $('#id_cliente').select2();
+        });            
     </script>
     {% endblock %}
     {% load bootstrap %}
-    <form action="{{ request.get_full_path }}" method="POST">
-        {% csrf_token %}        
-        {{ form_orcamento|bootstrap }}            
-        <input type="submit" class="btn btn-primary mb-2" value="Salvar">
-    </form>    
+    <div class="card shadow mb-4" >        
+        <div class="card-body">
+        <form action="{{ request.get_full_path }}" method="POST">
+            {% csrf_token %}
+                                 
+                <div class="col-sm-12">  
+                    {{ form_orcamento.tipo|bootstrap }}
+                </div>
+                <div class="col-sm-12"> 
+                    {{ form_orcamento.cliente|bootstrap }}
+                </div>
+                <div class="col-sm-12">
+                    {{ form_orcamento.vendedor|bootstrap }}
+                </div>
+                <div class="col-sm-12">
+                    {{ form_orcamento.desconto|bootstrap }}
+                </div>
+                <div style="margin-top:20px; float:right; margin-right:12px;">
+                    <input type="submit" class="btn btn-primary mb-2" value="Continuar">
+                </div>
+            
+        </form>  
+        </div>  
+    </div>   
     
 {% endblock %}
