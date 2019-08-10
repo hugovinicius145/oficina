@@ -14,6 +14,7 @@ class Produto(models.Model):
     modified = models.DateTimeField(auto_now=True)
     categoria = models.ForeignKey(to=Categoria, on_delete=models.CASCADE, blank=True, null=True)
     codigo_fabrica = models.IntegerField(blank=True, null=True)
+    estoque_minimo = models.PositiveSmallIntegerField(blank=True, null=True,default=1)
 
     class Meta:
         ordering = ['descricao']
@@ -31,6 +32,10 @@ class Produto(models.Model):
             return True
         else:
             return False
+    
+    def get_estoque_baixo(self):
+        if self.quantidade <= self.estoque_minimo:
+            return True
             
 
 class Endereco(models.Model):

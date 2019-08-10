@@ -5,7 +5,7 @@ from django_select2.forms import *
 class ProdutoForm(forms.ModelForm):
     class Meta:
         model = Produto
-        fields = ["descricao","quantidade","valor_compra","valor_venda","categoria","codigo_fabrica"]
+        fields = ["descricao","quantidade","valor_compra","valor_venda","categoria","codigo_fabrica","estoque_minimo"]
         widgets = {
             'categoria': Select2Widget,            
         }
