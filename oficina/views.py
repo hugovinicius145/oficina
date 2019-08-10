@@ -456,19 +456,9 @@ def vendas(request):
     return redirect('oficina:orcamentos')
 
 def orcamentos(request):
-    lista_orcamento = OrcamentoVenda.objects.all().order_by('-modified')
-    search = request.GET.get('search')
-    if search:
-        if search.isdigit():        
-            lista_orcamento = OrcamentoVenda.objects.filter(id=search)
-        else:
-            lista_orcamento = OrcamentoVenda.objects.filter(cliente__nome__icontains=search)
-        
-    paginator = Paginator(lista_orcamento,30)
-    page = request.GET.get('page')
-    orcamentos = paginator.get_page(page)    
+    lista_orcamento = OrcamentoVenda.objects.all().order_by('-modified')    
     data = {        
-        'orcamentos': orcamentos,    
+        'orcamentos': lista_orcamento,    
     }
     return render(request, "oficina/vendas/orcamentoVendas.html",data)
 
