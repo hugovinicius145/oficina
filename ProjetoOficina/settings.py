@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '$oe+rotv#9l1#d@1#abjp4$j2y*nuw)ux37zp^j!vwr#vxnm5j'
+SECRET_KEY = '$oe+(&#@XEV>rotv#9l1#d@1#abjp4$j2y*nuw)ux37zp^j!vwr#vxnm5j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,8 +41,7 @@ INSTALLED_APPS = [
     'oficina.apps.OficinaConfig',
     'relatorios.apps.RelatoriosConfig',
     'bootstrapform',
-    'django_select2',
-    'select2',
+    'django_select2',    
     
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
