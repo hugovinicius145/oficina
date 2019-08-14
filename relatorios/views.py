@@ -78,15 +78,25 @@ def itens_vendidos(request):
 ##### Pedidos #####################################
 
 def novo_pedido(request):
+    base_url = '/relatorios/pedidos/new'
     form = ItemPedidoForm()
+    msg = request.GET.get('msg')
+    alerta = False
+    if msg:
+        alerta = True            
     data = {
-        'form':form
+        'form':form,
+        'msg':msg,
+        'alerta':alerta,
+        'tipo_alerta':"alert alert-success",
     }
     if request.method == 'POST':
         form = ItemPedidoForm(request.POST)
         if form.is_valid():
-            form.save() 
-            return redirect('relatorios:pedidos')
+            form.save()             
+            query_string = urlencode({'msg': 'Item Adcionado Com Sucesso!!!' })
+            url = '{}?{}'.format(base_url,query_string)                    
+            return redirect(url)
     elif request.method == 'GET':  
         return render(request, "relatorios/pedidos/new.html",data)
     
