@@ -86,7 +86,7 @@
                     <div id="botao_enviar">
                         <input id="input_enviar" type="image" src="https://img.icons8.com/color/55/000000/add.png" alt="">
                     </div>
-                    <a href="{% url 'oficina:novo_produto'%}" data-toggle="modal" data-target="#cancelModal"> <img src="https://img.icons8.com/color/55/000000/cancel.png"> </a>
+                    <a href="{% url 'oficina:apagar_produto' produto.id%}" data-toggle="modal" data-target="#cancelModal"> <img src="https://img.icons8.com/color/55/000000/cancel.png"> </a>
                 </div>
                 </form>
             </div>
@@ -99,16 +99,18 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Deseja cancelar o cadastro do produto?</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Deseja excluir esse produto?</h5>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body">Selecine "Sim" para cancelar o produto.</div>
+        <div class="modal-body">Selecine "Sim" para excluir o produto.</div>
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Não</button>
-          <a class="btn btn-primary" href="{% url 'oficina:produtos' %}">Sim</a>
+          <a class="btn btn-primary" href="{% url 'oficina:apagar_produto' produto.id %}">Sim</a>
         </div>
       </div>
     </div>  
+
+    
 {% endblock %}

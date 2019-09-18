@@ -52,16 +52,16 @@
             <img src="https://img.icons8.com/color/30/000000/warning-shield.png">
             {% endif%}
         </td>
-        <td>
+        <td>            
+          {% if orcamento.status %}
             <a href="{% url 'oficina:detail_orcamento' orcamento.id %}"> <img src="https://img.icons8.com/dusk/30/000000/details-popup.png"> </a>
-            {% if orcamento.status %}
-            {% else %}
-            <a href="{% url 'oficina:novo_item' orcamento.id %}"><img src="https://img.icons8.com/color/30/000000/edit.png"></a>
-            <a href="{% url 'oficina:apagar_orcamento' orcamento.id %}"><img src="https://img.icons8.com/color/30/000000/delete.png"></a>
-            {% endif %}
+          {% else %}
+            <a href="{% url 'oficina:novo_item' orcamento.id %}"><img src="https://img.icons8.com/color/30/000000/edit.png"></a>          
+          {% endif %}
         </td>
       </tr>
       {% endfor %}       
     </table>
 </div> 
+
 {% endblock %}

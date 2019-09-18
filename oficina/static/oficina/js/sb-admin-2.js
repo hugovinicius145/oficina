@@ -1,6 +1,6 @@
 (function($) {
   "use strict"; // Start of use strict
-
+  
   // Toggle the side navigation
   $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
     $("body").toggleClass("sidebar-toggled");
@@ -14,6 +14,7 @@
   $(window).resize(function() {
     if ($(window).width() < 768) {
       $('.sidebar .collapse').collapse('hide');
+      
     };
   });
 

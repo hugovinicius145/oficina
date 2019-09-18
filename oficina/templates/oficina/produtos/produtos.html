@@ -41,8 +41,7 @@
         <td>{{produto.valor_venda}}</td>
         
         <td>
-            <a href="{% url 'oficina:atualizar_produto' produto.id%}"><img src="https://img.icons8.com/color/30/000000/edit.png"></a>
-            <a href="{% url 'oficina:apagar_produto' produto.id%}"><img src="https://img.icons8.com/color/30/000000/delete.png"></a>
+            <a href="{% url 'oficina:atualizar_produto' produto.id%}"><img src="https://img.icons8.com/color/30/000000/edit.png"></a>            
         </td>
       </tr>
       {% endfor %}       
